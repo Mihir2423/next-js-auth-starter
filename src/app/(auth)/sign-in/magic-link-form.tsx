@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { sendMagicLink } from "./action";
 
 const magicLinkSchema = z.object({
   email: z.string().email({
@@ -34,11 +32,6 @@ export const MagicLinkForm = (props: Props) => {
   async function onSubmit(values: z.infer<typeof magicLinkSchema>) {
     if (!values.email || !values.email.trim()) {
       return;
-    }
-    try {
-      await sendMagicLink(values.email);
-    } catch (error) {
-      console.log("Something went wrong", error);
     }
   }
   return (

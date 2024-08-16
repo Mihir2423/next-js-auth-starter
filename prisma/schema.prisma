@@ -11,17 +11,18 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  role          String?
-  accounts      Account[]
-  sessions      Session[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String            @id @default(cuid())
+  name             String?
+  email            String            @unique
+  emailVerified    DateTime?
+  image            String?
+  role             String?
+  accounts         Account[]
+  sessions         Session[]
+  resetToken       ResetToken?
+  verifyEmailToken VerifyEmailToken?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   @@map("users")
 }
@@ -67,4 +68,33 @@ model VerificationToken {
 
   @@id([identifier, token])
   @@map("verification_tokens")
+}
+
+model MagicLink {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  token          String?
+  tokenExpiresAt DateTime?
+
+  @@map("magic_links")
+}
+
+model ResetToken {
+  id             Int       @id @default(autoincrement())
+  userId         String    @unique
+  token          String?
+  tokenExpiresAt DateTime?
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reset_tokens")
+}
+
+model VerifyEmailToken {
+  id             Int       @id @default(autoincrement())
+  userId         String    @unique
+  token          String?
+  tokenExpiresAt DateTime?
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("verify_email_tokens")
 }
