@@ -6,19 +6,17 @@ export async function sendEmail(
     subject: string,
     html: any
 ) {
-    if (!process.env.EMAIL_FROM) {
+    if (!process.env.NEXT_PUBLIC_EMAIL_FROM) {
         throw new Error("EMAIL_FROM is not defined")
     }
-    console.log(process.env.EMAIL_FROM, process.env.EMAIL_PASSWORD);
-    
+    const emailFrom = process.env.NEXT_PUBLIC_EMAIL_FROM;
+    const emailPassword = process.env.NEXT_PUBLIC_EMAIL_PASSWORD;
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         secure: true,
         auth: {
-            // user: process.env.EMAIL_FROM,
-            // pass: process.env.EMAIL_PASSWORD,
-            user: "mihirraj444@gmail.com",
-            pass: "kgwq gogg mzvv azch",
+            user: emailFrom,
+            pass: emailPassword,
         },
     });
 
@@ -26,7 +24,7 @@ export async function sendEmail(
 
     try {
         const options = {
-            from: process.env.EMAIL_FROM,
+            from: emailFrom,
             to: email,
             subject: subject,
             html: emailHtml,
