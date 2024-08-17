@@ -11,8 +11,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
+import { useServerAction } from "zsa-react";
+import { signInLinkMagicAction } from "./actions";
 
 const magicLinkSchema = z.object({
   email: z.string().email({
@@ -29,10 +33,16 @@ export const MagicLinkForm = (props: Props) => {
       email: "",
     },
   });
+  const { execute, isPending } = useServerAction(signInLinkMagicAction, {
+    onError({ err }) {
+      toast.message("Something went wrong");
+    },
+  });
   async function onSubmit(values: z.infer<typeof magicLinkSchema>) {
     if (!values.email || !values.email.trim()) {
       return;
     }
+    execute(values);
   }
   return (
     <div className="w-full">
@@ -54,8 +64,13 @@ export const MagicLinkForm = (props: Props) => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full py-[4px] text-sm">
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="w-full py-[4px] text-sm"
+          >
             Continue
+            {isPending && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
           </Button>
         </form>
       </Form>

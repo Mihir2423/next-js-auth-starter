@@ -9,12 +9,16 @@ export async function sendEmail(
     if (!process.env.EMAIL_FROM) {
         throw new Error("EMAIL_FROM is not defined")
     }
+    console.log(process.env.EMAIL_FROM, process.env.EMAIL_PASSWORD);
+    
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         secure: true,
         auth: {
-            user: process.env.EMAIL_FROM,
-            pass: process.env.EMAIL_PASSWORD,
+            // user: process.env.EMAIL_FROM,
+            // pass: process.env.EMAIL_PASSWORD,
+            user: "mihirraj444@gmail.com",
+            pass: "kgwq gogg mzvv azch",
         },
     });
 
