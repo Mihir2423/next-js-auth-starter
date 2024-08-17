@@ -11,11 +11,6 @@ export const signInLinkMagicAction = unauthenticatedAction.createServerAction()
             email: z.string().email(),
         })
     ).handler(async ({ input }) => {
-        try {
-            await sendMagicLinkUseCase(input.email);
-            redirect("/sign-in/magic");
-        } catch (error) {
-            console.error('Error sending magic link:', error);
-            redirect("/sign-in/magic/error");
-        }
+        await sendMagicLinkUseCase(input.email);
+        redirect("/sign-in/magic");
     })

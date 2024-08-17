@@ -21,7 +21,7 @@ export async function sendMagicLinkUseCase(email: string) {
       MagicLinkEmail({ token })
     );
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error sending email from magic-link.tsx:", error);
 
     // Redirect to the fallback route
     return { redirect: "/sign-in/magic/email" };
