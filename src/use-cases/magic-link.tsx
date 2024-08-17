@@ -1,20 +1,31 @@
 import { applicationName } from "@/app-config";
 import {
-    deleteMagicLinkByToken,
+  deleteMagicLinkByToken,
   getMagicLinkByToken,
   upsertMagicLink,
 } from "@/data-access/magic-links";
-import { createMagicUser, getUserByEmail, setEmailVerified } from "@/data-access/users";
+import {
+  createMagicUser,
+  getUserByEmail,
+  setEmailVerified,
+} from "@/data-access/users";
 import { MagicLinkEmail } from "@/emails/magic-link";
 import { sendEmail } from "@/lib/send-email";
 
 export async function sendMagicLinkUseCase(email: string) {
   const token = await upsertMagicLink(email);
-  await sendEmail(
-    email,
-    `Your magic login link for ${applicationName}`,
-    MagicLinkEmail({ token })
-  );
+  try {
+    await sendEmail(
+      email,
+      `Your magic login link for ${applicationName}`,
+      MagicLinkEmail({ token })
+    );
+  } catch (error) {
+    console.error("Error sending email:", error);
+
+    // Redirect to the fallback route
+    return { redirect: "/sign-in/magic/email" };
+  }
 }
 
 export async function loginWithMagicLinkUseCase(token: string) {
