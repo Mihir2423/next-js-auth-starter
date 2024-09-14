@@ -1,7 +1,7 @@
 "use server";
 
 import { unauthenticatedAction } from "@/lib/safe-action";
-import { registerUserUseCase } from "@/use-cases/users";
+import { createSessionUseCase, registerUserUseCase } from "@/use-cases/users";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -15,5 +15,6 @@ export const signUpAction = unauthenticatedAction
   )
   .handler(async ({ input }) => {
     const user = await registerUserUseCase(input.email, input.password);
+    await createSessionUseCase(user.id, user.salt);
     return redirect("/sign-in/magic");
   });

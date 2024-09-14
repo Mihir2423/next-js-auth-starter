@@ -1,7 +1,7 @@
 "use server";
 
 import { unauthenticatedAction } from "@/lib/safe-action";
-import { signInUseCase } from "@/use-cases/users";
+import { createSessionUseCase, signInUseCase } from "@/use-cases/users";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -15,5 +15,6 @@ export const signInAction = unauthenticatedAction
   )
   .handler(async ({ input }) => {
     const user = await signInUseCase(input.email, input.password);
+    await createSessionUseCase(user.id, user.salt);
     redirect("/");
   });
