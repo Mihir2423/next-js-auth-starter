@@ -51,6 +51,7 @@ export async function GET(req: Request): Promise<Response> {
             },
         })
     } catch (error) {
+        console.error("Error signing in with magic link", error);
         return new Response(null, {
             status: 302,
             headers: {

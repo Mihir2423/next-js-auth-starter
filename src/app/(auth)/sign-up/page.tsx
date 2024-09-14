@@ -15,6 +15,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useServerAction } from "zsa-react";
+import { signUpAction } from "./actions";
+import { toast } from "sonner";
+import { Loader2, Terminal } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const registrationSchema = z
   .object({
@@ -38,8 +43,14 @@ const SignUpPage = (props: Props) => {
       passwordConfirmation: "",
     },
   });
+  const { execute, isPending, error } = useServerAction(signUpAction, {
+    onError({ err }) {
+      toast.error("Something went wrong");
+    },
+  });
+
   function onSubmit(values: z.infer<typeof registrationSchema>) {
-    // execute(values);
+    execute(values);
     console.log(values);
   }
   return (
@@ -70,7 +81,7 @@ const SignUpPage = (props: Props) => {
                 <FormItem className="w-full">
                   <FormLabel className="">Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Password" {...field} />
+                    <Input type="password" placeholder="Password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -83,15 +94,30 @@ const SignUpPage = (props: Props) => {
                 <FormItem className="w-full">
                   <FormLabel className="">Confirm Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Confirm Password" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="Confirm Password"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full py-[4px] text-sm">
-              Continue
-              {/* {isPending && <Loader2 className="w-4 h-4 ml-2 animate-spin" />} */}
+            {error && (
+              <Alert variant="destructive">
+                <Terminal className="h-4 w-4" />
+                <AlertTitle>Uh-oh, we couldn&apos;t log you in</AlertTitle>
+                <AlertDescription>{error?.message}</AlertDescription>
+              </Alert>
+            )}
+            <Button
+              disabled={isPending}
+              type="submit"
+              className="w-full py-[4px] text-sm"
+            >
+              Register
+              {isPending && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
             </Button>
           </form>
         </Form>
