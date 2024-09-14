@@ -4,7 +4,7 @@ import React from "react";
 
 type Props = {
   children: React.ReactNode;
-  type: "Sign-In" | "Sign-Up";
+  type: "Sign-In" | "Sign-Up" | "Forgot Password";
   text: string;
 };
 
@@ -29,7 +29,7 @@ export const AuthLayout = ({ children, type, text }: Props) => {
             <Fingerprint />
             <div className="flex flex-col items-center">
               <h1 className="font-bold text-[#212126] text-lg">
-                {type} to Next App
+                {type} {type !== "Forgot Password" && "to Next App"}
               </h1>
               <p className="text-[#747686] text-sm">{text}</p>
             </div>

@@ -1,4 +1,5 @@
 import { applicationName } from "@/app-config";
+import { signIn } from "@/auth";
 import { upsertMagicLink } from "@/data-access/magic-links";
 import {
   createUser,
@@ -8,10 +9,10 @@ import {
 import { MagicLinkEmail } from "@/emails/magic-link";
 import { sendEmail } from "@/lib/send-email";
 import crypto from "crypto";
-import { hashPassword } from "./utils";
 import { LoginError } from "./errors";
-import axios from "axios";
-import { signIn } from "@/auth";
+import { hashPassword } from "./utils";
+import { createPasswordResetToken } from "@/data-access/reset-tokens";
+import { ResetPasswordEmail } from "@/emails/reset-password";
 
 export async function registerUserUseCase(email: string, password: string) {
   const existingUser = await getUserByEmail(email);
@@ -36,7 +37,10 @@ export async function registerUserUseCase(email: string, password: string) {
   return { id: user.id, salt };
 }
 
-export const createSessionUseCase = async (userId: string, salt: string | null) => {
+export const createSessionUseCase = async (
+  userId: string,
+  salt: string | null
+) => {
   await signIn("credentials", { id: userId, salt });
 };
 
@@ -51,4 +55,20 @@ export async function signInUseCase(email: string, password: string) {
     throw new LoginError();
   }
   return user;
+}
+
+export async function resetPasswordUseCase(email: string) {
+  const user = await getUserByEmail(email);
+
+  if (!user) {
+    return null;
+  }
+
+  const token = await createPasswordResetToken(user.id);
+
+  await sendEmail(
+    email,
+    `Your password reset link for ${applicationName}`,
+    <ResetPasswordEmail token={token} />
+  );
 }
