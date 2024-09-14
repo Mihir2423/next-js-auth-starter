@@ -11,6 +11,7 @@ import crypto from "crypto";
 import { hashPassword } from "./utils";
 import { LoginError } from "./errors";
 import axios from "axios";
+import { signIn } from "@/auth";
 
 export async function registerUserUseCase(email: string, password: string) {
   const existingUser = await getUserByEmail(email);
@@ -36,10 +37,7 @@ export async function registerUserUseCase(email: string, password: string) {
 }
 
 export const createSessionUseCase = async (userId: string) => {
-  if (!process.env.HOST_NAME) {
-    throw new Error("HOST_NAME is not set");
-  }
-  await axios.post(`${process.env.HOST_NAME}/api/login/session`, { userId });
+  await signIn("credentials", { id: userId });
 };
 
 export async function signInUseCase(email: string, password: string) {
@@ -52,6 +50,5 @@ export async function signInUseCase(email: string, password: string) {
   if (!isPasswordCorrect) {
     throw new LoginError();
   }
-  await createSessionUseCase(user.id);
   return user;
 }
