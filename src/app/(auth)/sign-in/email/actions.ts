@@ -15,6 +15,6 @@ export const signInAction = unauthenticatedAction
   )
   .handler(async ({ input }) => {
     const user = await signInUseCase(input.email, input.password);
-    await createSessionUseCase(user.id);
+    await createSessionUseCase(user.id, user.salt);
     redirect("/");
   });

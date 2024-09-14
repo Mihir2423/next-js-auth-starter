@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import { hashPassword } from "@/use-cases/utils";
+import crypto from "crypto";
 
 export async function createUser(
   email: string,
@@ -19,8 +20,9 @@ export async function createUser(
 }
 
 export async function createMagicUser(email: string) {
+  const salt = crypto.randomBytes(128).toString("base64");
   const user = await prisma.user.create({
-    data: { email, emailVerified: new Date() },
+    data: { email, emailVerified: new Date(), salt },
   });
   await prisma.account.create({
     data: {

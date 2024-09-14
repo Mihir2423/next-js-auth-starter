@@ -12,11 +12,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       name: "Credentials",
       credentials: {
         id: { label: "ID", type: "text" },
+        salt: { label: "Salt", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.id) return null;
         const user = await prisma.user.findUnique({
-          where: { id: credentials.id as string },
+          where: { id: credentials.id as string, salt: credentials.salt as string },
         });
 
         return user;

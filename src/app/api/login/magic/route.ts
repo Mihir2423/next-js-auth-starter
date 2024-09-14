@@ -27,7 +27,7 @@ export async function GET(req: Request): Promise<Response> {
       });
     }
     // create a session
-    await createSessionUseCase(user.id);
+    await createSessionUseCase(user.id, user.salt);
     return new Response(null, {
       status: 302,
       headers: {

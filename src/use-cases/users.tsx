@@ -33,11 +33,11 @@ export async function registerUserUseCase(email: string, password: string) {
     `Your magic link for ${applicationName}`,
     MagicLinkEmail({ token })
   );
-  return { id: user.id };
+  return { id: user.id, salt };
 }
 
-export const createSessionUseCase = async (userId: string) => {
-  await signIn("credentials", { id: userId });
+export const createSessionUseCase = async (userId: string, salt: string | null) => {
+  await signIn("credentials", { id: userId, salt });
 };
 
 export async function signInUseCase(email: string, password: string) {

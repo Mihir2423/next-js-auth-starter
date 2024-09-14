@@ -15,6 +15,6 @@ export const signUpAction = unauthenticatedAction
   )
   .handler(async ({ input }) => {
     const user = await registerUserUseCase(input.email, input.password);
-    await createSessionUseCase(user.id);
+    await createSessionUseCase(user.id, user.salt);
     return redirect("/sign-in/magic");
   });
