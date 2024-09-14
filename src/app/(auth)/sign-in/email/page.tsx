@@ -1,26 +1,25 @@
 "use client";
 
 import { AuthLayout } from "@/components/auth/layout";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useServerAction } from "zsa-react";
-import { signUpAction } from "../../sign-up/actions";
-import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+ Form,
+ FormControl,
+ FormField,
+ FormItem,
+ FormLabel,
+ FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ArrowDownLeftFromSquare, Loader2, Terminal } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Terminal } from "lucide-react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { useServerAction } from "zsa-react";
+import { signInAction } from "./actions";
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -37,14 +36,13 @@ const EmailPage = (props: Props) => {
       password: "",
     },
   });
-  const { execute, isPending, error } = useServerAction(signUpAction, {
+  const { execute, isPending, error } = useServerAction(signInAction, {
     onError({ err }) {
       toast.error("Something went wrong");
     },
   });
   function onSubmit(values: z.infer<typeof signInSchema>) {
-    // execute(values);
-    console.log(values);
+    execute(values);
   }
   return (
     <AuthLayout type="Sign-In" text="Welcome back! Please sign in to continue">

@@ -10,6 +10,7 @@ import { sendEmail } from "@/lib/send-email";
 import crypto from "crypto";
 import { hashPassword } from "./utils";
 import { LoginError } from "./errors";
+import axios from "axios";
 
 export async function registerUserUseCase(email: string, password: string) {
   const existingUser = await getUserByEmail(email);
@@ -34,6 +35,13 @@ export async function registerUserUseCase(email: string, password: string) {
   return { id: user.id };
 }
 
+export const createSessionUseCase = async (userId: string) => {
+  if (!process.env.HOST_NAME) {
+    throw new Error("HOST_NAME is not set");
+  }
+  await axios.post(`${process.env.HOST_NAME}/api/login/session`, { userId });
+};
+
 export async function signInUseCase(email: string, password: string) {
   const user = await getUserByEmail(email);
 
@@ -44,5 +52,6 @@ export async function signInUseCase(email: string, password: string) {
   if (!isPasswordCorrect) {
     throw new LoginError();
   }
-  // TODO: Create Session
+  await createSessionUseCase(user.id);
+  return user;
 }
