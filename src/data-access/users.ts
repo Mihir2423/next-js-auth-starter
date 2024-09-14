@@ -1,9 +1,14 @@
 import prisma from "@/lib/db";
+import { hashPassword } from "@/use-cases/utils";
 
-export async function createUser(email: string, password?: string) {
-  if (password) {
+export async function createUser(
+  email: string,
+  password?: string,
+  salt?: string
+) {
+  if (password && salt) {
     const user = await prisma.user.create({
-      data: { email, password },
+      data: { email, password, salt },
     });
     return user;
   }
@@ -41,4 +46,19 @@ export async function setEmailVerified(userId: string) {
     data: { emailVerified: new Date() },
   });
   return user;
+}
+
+export async function verifyPassword(email: string, password: string) {
+  const user = await getUserByEmail(email);
+
+  if (!user) {
+    return false;
+  }
+  const salt = user.salt;
+  const savedPass = user.password;
+  if (!salt || !savedPass) {
+    return false;
+  }
+  const hash = await hashPassword(password, salt);
+  return hash === savedPass;
 }

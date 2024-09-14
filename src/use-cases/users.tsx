@@ -1,10 +1,15 @@
 import { applicationName } from "@/app-config";
 import { upsertMagicLink } from "@/data-access/magic-links";
-import { createUser, getUserByEmail } from "@/data-access/users";
+import {
+  createUser,
+  getUserByEmail,
+  verifyPassword,
+} from "@/data-access/users";
 import { MagicLinkEmail } from "@/emails/magic-link";
 import { sendEmail } from "@/lib/send-email";
 import crypto from "crypto";
 import { hashPassword } from "./utils";
+import { LoginError } from "./errors";
 
 export async function registerUserUseCase(email: string, password: string) {
   const existingUser = await getUserByEmail(email);
@@ -13,7 +18,7 @@ export async function registerUserUseCase(email: string, password: string) {
   }
   const salt = crypto.randomBytes(128).toString("base64");
   const hash = await hashPassword(password, salt);
-  const user = await createUser(email, hash);
+  const user = await createUser(email, hash, salt);
   if (!user) {
     throw new Error("Error creating user");
   }
@@ -27,4 +32,17 @@ export async function registerUserUseCase(email: string, password: string) {
     MagicLinkEmail({ token })
   );
   return { id: user.id };
+}
+
+export async function signInUseCase(email: string, password: string) {
+  const user = await getUserByEmail(email);
+
+  if (!user) {
+    throw new LoginError();
+  }
+  const isPasswordCorrect = await verifyPassword(email, password);
+  if (!isPasswordCorrect) {
+    throw new LoginError();
+  }
+  // TODO: Create Session
 }

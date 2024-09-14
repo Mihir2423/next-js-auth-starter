@@ -18,6 +18,7 @@ model User {
   image            String?
   password         String?
   role             String?
+  salt             String?
   accounts         Account[]
   sessions         Session[]
   resetToken       ResetToken?

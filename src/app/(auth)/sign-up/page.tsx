@@ -51,7 +51,6 @@ const SignUpPage = (props: Props) => {
 
   function onSubmit(values: z.infer<typeof registrationSchema>) {
     execute(values);
-    console.log(values);
   }
   return (
     <AuthLayout type="Sign-Up" text="Create an account to get started">
