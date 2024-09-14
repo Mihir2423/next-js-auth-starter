@@ -15,7 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         salt: { label: "Salt", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.id) return null;
+        if (!credentials?.id || !credentials?.salt) return null;
         const user = await prisma.user.findUnique({
           where: { id: credentials.id as string, salt: credentials.salt as string },
         });
