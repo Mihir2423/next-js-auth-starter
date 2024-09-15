@@ -1,3 +1,4 @@
+import prisma from "@/lib/db";
 import crypto from "crypto";
 
 /** Generate a random token of the specified length, using crypto.randomBytes function
@@ -5,15 +6,21 @@ import crypto from "crypto";
  * @param length The length of the token to generate.
  */
 export async function generateRandomToken(length: number) {
-    const buf = await new Promise<Buffer>((resolve, reject) => {
-        crypto.randomBytes(Math.ceil(length / 2), (err, buf) => {
-            if (err !== null) {
-                reject(err);
-            } else {
-                resolve(buf);
-            }
-        });
+  const buf = await new Promise<Buffer>((resolve, reject) => {
+    crypto.randomBytes(Math.ceil(length / 2), (err, buf) => {
+      if (err !== null) {
+        reject(err);
+      } else {
+        resolve(buf);
+      }
     });
+  });
 
-    return buf.toString("hex").slice(0, length);
+  return buf.toString("hex").slice(0, length);
+}
+
+export async function createTransaction<T extends typeof prisma>(
+  cb: (trx: T) => void
+) {
+  await prisma.$transaction(cb as any);
 }
