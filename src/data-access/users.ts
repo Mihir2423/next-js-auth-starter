@@ -64,3 +64,16 @@ export async function verifyPassword(email: string, password: string) {
   const hash = await hashPassword(password, salt);
   return hash === savedPass;
 }
+
+export async function updatePassword(
+  userId: string,
+  password: string,
+  trx = prisma
+) {
+  const salt = crypto.randomBytes(128).toString("base64");
+  const hash = await hashPassword(password, salt);
+  await trx.user.update({
+    where: { id: userId },
+    data: { password: hash, salt },
+  });
+}

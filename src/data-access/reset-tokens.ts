@@ -16,3 +16,16 @@ export async function createPasswordResetToken(userId: string) {
 
   return token;
 }
+
+export async function getPasswordResetToken(token: string) {
+  const resetToken = await prisma.resetToken.findFirst({
+    where: { token },
+  });
+  return resetToken;
+}
+
+export async function deletePasswordResetToken(id: number, trx = prisma) {
+  await trx.resetToken.delete({
+    where: { id },
+  });
+}

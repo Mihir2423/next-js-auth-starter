@@ -41,16 +41,16 @@ export function ResetPasswordEmail({ token }: { token: string }) {
 
               <Section className="mt-[32px] mb-[32px] px-20 text-center">
                 <Text className="mb-8 font-medium text-[14px] text-black leading-[24px]">
-                  Your password reset link is below, Click to login.
+                  Click the following link to reset your password
                 </Text>
 
                 <Text className="font-medium text-[14px] text-black leading-[24px]">
                   <Link
-                    href={`${BASE_URL}/api/login/magic?token=${token}`}
+                    href={`${BASE_URL}/reset-password?token=${token}`}
                     target="_blank"
                     className="bg-black px-6 py-2 rounded-md w-fit text-white"
                   >
-                    Login from here!
+                    Reset Password
                   </Link>
                 </Text>
               </Section>

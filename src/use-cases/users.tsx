@@ -2,17 +2,24 @@ import { applicationName } from "@/app-config";
 import { signIn } from "@/auth";
 import { upsertMagicLink } from "@/data-access/magic-links";
 import {
-  createUser,
-  getUserByEmail,
-  verifyPassword,
+ createPasswordResetToken,
+ deletePasswordResetToken,
+ getPasswordResetToken,
+} from "@/data-access/reset-tokens";
+import { deleteSessionUseCase } from "@/data-access/sessions";
+import {
+ createUser,
+ getUserByEmail,
+ updatePassword,
+ verifyPassword,
 } from "@/data-access/users";
+import { createTransaction } from "@/data-access/utils";
 import { MagicLinkEmail } from "@/emails/magic-link";
+import { ResetPasswordEmail } from "@/emails/reset-password";
 import { sendEmail } from "@/lib/send-email";
 import crypto from "crypto";
 import { LoginError } from "./errors";
 import { hashPassword } from "./utils";
-import { createPasswordResetToken } from "@/data-access/reset-tokens";
-import { ResetPasswordEmail } from "@/emails/reset-password";
 
 export async function registerUserUseCase(email: string, password: string) {
   const existingUser = await getUserByEmail(email);
@@ -71,4 +78,19 @@ export async function resetPasswordUseCase(email: string) {
     `Your password reset link for ${applicationName}`,
     <ResetPasswordEmail token={token} />
   );
+}
+
+export async function changePasswordUseCase(token: string, password: string) {
+  const resetToken = await getPasswordResetToken(token);
+  if (!resetToken) {
+    throw new Error("Invalid token");
+  }
+
+  const userId = resetToken.userId;
+  const id = resetToken.id;
+  await createTransaction(async (trx) => {
+    await deletePasswordResetToken(id, trx);
+    await updatePassword(userId, password, trx);
+    await deleteSessionUseCase(userId, trx);
+  });
 }

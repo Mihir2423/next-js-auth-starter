@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { AuthLayout } from "@/components/auth/layout";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, Terminal } from "lucide-react";
+import { resetPasswordAction } from "./actions";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const fortgotPasswordSchema = z.object({
   email: z.string().email(),
@@ -27,11 +29,14 @@ const fortgotPasswordSchema = z.object({
 type Props = {};
 
 const ForgotPasswordPage = (props: Props) => {
-  const { execute, isPending, isSuccess } = useServerAction(signInAction, {
-    onError({ err }) {
-      toast.error("An error occurred. Please try again.");
-    },
-  });
+  const { execute, isPending, isSuccess } = useServerAction(
+    resetPasswordAction,
+    {
+      onError({ err }) {
+        toast.error("An error occurred. Please try again.");
+      },
+    }
+  );
 
   const form = useForm<z.infer<typeof fortgotPasswordSchema>>({
     resolver: zodResolver(fortgotPasswordSchema),
@@ -41,7 +46,7 @@ const ForgotPasswordPage = (props: Props) => {
   });
 
   function onSubmit(values: z.infer<typeof fortgotPasswordSchema>) {
-    // execute(values);
+    execute(values);
     console.log(values);
   }
   return (
@@ -49,6 +54,15 @@ const ForgotPasswordPage = (props: Props) => {
       type="Forgot Password"
       text="Forgot your password? Enter your email below to reset it."
     >
+      {isSuccess && (
+        <Alert variant="success">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Reset link sent</AlertTitle>
+          <AlertDescription>
+            We have sent you an email with a link to reset your password.
+          </AlertDescription>
+        </Alert>
+      )}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
