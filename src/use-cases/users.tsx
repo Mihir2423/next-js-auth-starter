@@ -48,7 +48,7 @@ export const createSessionUseCase = async (
   userId: string,
   salt: string | null
 ) => {
-  await signIn("credentials", { id: userId, salt });
+  await signIn("credentials", { id: userId, salt, redirect: false });
 };
 
 export async function signInUseCase(email: string, password: string) {
